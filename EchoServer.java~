@@ -1,3 +1,16 @@
+// ============================================================================
+// file: EchoServer.java
+// ============================================================================
+// Programmer: David Shin
+// Date: 09/26/2017
+// Class: CS 380("Computer Networks")
+// Time: TTH 3:00pm
+// Instructor: Mr. Davarpanah
+// Assignment: 01
+//
+// Description:
+//    
+// ============================================================================
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
