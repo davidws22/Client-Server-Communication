@@ -38,19 +38,22 @@ public class EchoClient
 			System.out.print("Client> ");
 			number = sc.nextLine();
 			
-			if(number.equals("exit"))
-			   {
-			       try{ socket.close();
-				   return;}
-			       catch(Exception e)
-				   {e.printStackTrace();
-				   }
-			   }
 			
 			sendMessage = number + "\n";
 			bw.write(sendMessage);
 			bw.flush();
-
+			if(number.equals("exit"))
+			  {
+			       try
+			       {
+				   socket.close();
+				   return;
+			       }
+			       catch(Exception e)
+			       {
+			           e.printStackTrace();
+			       }
+			    }
 			//System.out.println("Message sent to the server: " + sendMessage);
 			message = br.readLine();
 			System.out.println("Server> " + message);

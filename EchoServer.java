@@ -6,74 +6,90 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.lang.Thread;
+
 
 public class EchoServer
 {
-
-    private static Socket socket;
+    static Socket socket;
    
     public static void main(String[] args) throws Exception
     {
+	try 
+        {
 	    
-	
-	try (ServerSocket serverSocket = new ServerSocket(22222))
-	    {
-		int temp = 1;
+	        ServerSocket serverSocket = new ServerSocket(22222);
 		//Server is running always. This is done using this while(true) loop
+	
 		while(true)
 		    {
+			Runnable server = () -> {
 			try
 			{
-			Socket socket = serverSocket.accept();
+			    
+			Socket sock = socket;
 			String address = socket.getInetAddress().getHostAddress();
-			if(temp == 1)
-			{
-			    System.out.printf("Client connected: %s%n", address);
-			    temp--;
-			}
-
+			System.out.printf("Client connected: %s%n", address);
+			
+						
 			//Reading the message from the client
-			//socket = serverSocket.accept();
-			InputStream is = socket.getInputStream();
+			InputStream is = sock.getInputStream();
 			InputStreamReader isr = new InputStreamReader(is);
 			BufferedReader br = new BufferedReader(isr);
-			String number = br.readLine();
-			//System.out.println("Message received from client is "+number);
-			if (number == null)
-			    {
-				System.out.println("Client disconnected: " + address);
-			     
-			    }
-			String returnMessage = number + '\n';
-				
+			String number;
+			String message;
+
 
 			//Sending the response back to the client.
-			OutputStream os = socket.getOutputStream();
+			OutputStream os = sock.getOutputStream();
 			OutputStreamWriter osw = new OutputStreamWriter(os);
 			BufferedWriter bw = new BufferedWriter(osw);
-			bw.write(returnMessage);
-			//System.out.println("Message sent to the client is "+returnMessage);
-			bw.flush();
+
+			while((number = br.readLine()) != null)
+			    {
+				if(number.equals("exit"))
+				    {
+					System.out.printf("Client disconnected: %s%n", address);
+					sock.close();
+					number = null;
+					break;
+				    }
+				else
+				    {
+					//System.out.println("Message sent to the client is "+returnMessage);
+					message = number + '\n';
+					bw.write(message);
+					bw.flush();
+				    }
+			    }//end while
+		      
 			}//end inner-try
 		       	catch (Exception e)
+		        {
+			    e.printStackTrace();
+			}//end inner try-catch block
+			}; //end runnable
+
+			try{
+			    Socket s = serverSocket.accept();
+			    EchoServer.socket = s;
+			    Thread myThread = new Thread(server);
+			    myThread.start();
+			}
+				
+			catch (Exception e)
 			    {
 				e.printStackTrace();
-			    }//end inner try-catch block
+			    }//end try-catch block
 
-	       }//end while
-	    }//end first try
-	    catch (Exception e)
+		    }//end while
+		
+	}//end first try block
+	catch(Exception e)
 	    {
 		e.printStackTrace();
 	    }
-	finally
-	    {
-	        try
-		{
-		    socket.close();
-		}
-		catch(Exception e){}
-	    }
     }
 }
+
 			      
